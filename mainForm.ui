@@ -66,6 +66,9 @@
       <height>91</height>
      </rect>
     </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="delDir_pb">
     <property name="geometry">
@@ -78,6 +81,32 @@
     </property>
     <property name="text">
      <string>Delete Directory</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="outDir_le">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>150</y>
+      <width>481</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>dddfffdf</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="outDir_pb">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>150</y>
+      <width>131</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
     </property>
    </widget>
   </widget>

@@ -11,6 +11,8 @@ class mainWindow(QMainWindow, Form):
         self.setupUi(self)
         self.addInDir.clicked.connect(self.addNewDir)
         self.delDir_pb.clicked.connect(self.delDir)
+        self.outDir_le.setText(os.getcwd())
+        self.outDir_pb.clicked.connect(self.outDir)
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -26,6 +28,12 @@ class mainWindow(QMainWindow, Form):
         if(self.inDirs_lw.currentItem() != None):
             self.inDirs_lw.takeItem(self.inDirs_lw.currentRow())
             #print(self.inDirs_lw.currentItem().text())
+
+    def outDir(self):
+        directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        #self.outDir_le.setText("dddddddddddQQQQQQQ")
+        if directory != "":
+            self.outDir_le.setText(directory)
 
 app = QApplication(sys.argv)
 #app.setStyle("Fusion")
