@@ -3,7 +3,7 @@ import os
 import opncvAP
 import cv2
 from PyQt5 import uic,QtGui,QtCore
-from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene,QErrorMessage
+from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene,QErrorMessage,QMessageBox
 
 
 Form = uic.loadUiType(os.path.join(os.getcwd(),"mainForm.ui"))[0]
@@ -23,8 +23,10 @@ class mainWindow(QMainWindow, Form):
         #self.myImg
         self.myCVimg=None
         self.myCVimg_backup=None
+        self.rotatedImg=None
         self.grayScale_pb.clicked.connect(self.makeGray)
         self.rotate_dial.valueChanged.connect(self.doRotate)
+        self.confRot_pb.clicked.connect(self.confirmRotation)
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -108,6 +110,9 @@ class mainWindow(QMainWindow, Form):
         #self.graphView_gv.fitInView(pixit,QtCore.Qt.KeepAspectRatio)
     
     def makeGray(self):
+        
+        self.checkRotation()
+        
         newImg=opncvAP.gray_scale(self.myCVimg)
         if newImg is None:
             return
@@ -119,8 +124,30 @@ class mainWindow(QMainWindow, Form):
     def doRotate(self):
         #self.myCVimg
         newImg=opncvAP.rotate(self.myCVimg, self.rotate_dial.value())
-        self.rotate_lb.text=f"{self.rotate_dial.value()} degree"
+        self.rotate_lb.setText(f"{self.rotate_dial.value()} degree")
         self.redrawImg(newImg)
+        self.rotatedImg=[newImg,self.rotate_dial.value()]
+        
+
+    def confirmRotation(self):
+        self.myCVimg=self.rotatedImg[0]
+        self.doneTasks_lw.addItem(f"Rotated to {self.rotatedImg[1]} degree")
+        self.rotatedImg=None
+        self.rotate_dial.setValue(0)
+        self.rotate_lb.setText(f"{self.rotate_dial.value()} degree")
+
+    def checkRotation(self):
+        if self.rotatedImg != None and self.rotatedImg[1]!=0:
+            reply=QMessageBox.question(self, "Confirm Rotation?", "Do you confirm the Rotation?", QMessageBox.Yes, QMessageBox.No)
+            if reply==QMessageBox.Yes:
+                self.confirmRotation()
+            else:
+                self.rotatedImg=None
+                self.rotate_dial.setValue(0)
+                self.rotate_lb.setText(f"{self.rotate_dial.value()} degree")
+
+
+    
 
 
         
