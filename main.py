@@ -1,6 +1,7 @@
 import sys
 import os
 import opncvAP
+import cv2
 from PyQt5 import uic,QtGui,QtCore
 from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene,QErrorMessage
 
@@ -20,6 +21,8 @@ class mainWindow(QMainWindow, Form):
         #self.scene.addText("Hello")
         self.graphView_gv.setScene(self.scene)
         #self.myImg
+        self.myCVimg=None
+        self.grayScale_pb.clicked.connect(self.makeGray)
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -77,6 +80,7 @@ class mainWindow(QMainWindow, Form):
         #self.scene.addText(f'{row},{col}')
         pix=QtGui.QPixmap()
         try:
+            self.myCVimg=opncvAP.read_image(self.imgNames_tw.item(row,1).text())
             pix.load(self.imgNames_tw.item(row,1).text())
             self.scene.clear()
             pixit=self.scene.addPixmap(pix)
@@ -85,7 +89,28 @@ class mainWindow(QMainWindow, Form):
             err=QErrorMessage(self)
             err.showMessage("Something went wrong! Maybe the image is deleted or moved")
                     
+    def redrawImg(self):
+        self.scene.clear()
+        pix=opncvAP.convert_cv_qt(self.myCVimg)
+        pixit=self.scene.addPixmap(pix)
+        self.graphView_gv.fitInView(pixit,QtCore.Qt.KeepAspectRatio)
+        # cvRGBImg = cv2.cvtColor(self.myCVimg, cv2.COLOR_BGR2RGBA)
+        # x = cvRGBImg.shape[1]
+        # y = cvRGBImg.shape[0]
+        # qimg = QtGui.QImage(cvRGBImg,x,y, QtGui.QImage.Format_RGB32)
+        # #helpy=opncvAP.cv2_to_Qimg(self.myCVimg)
+        # pix=QtGui.QPixmap.fromImage(qimg)
+        # pixit=self.scene.addPixmap(pix)
+        #print("5")
+        #self.graphView_gv.fitInView(pixit,QtCore.Qt.KeepAspectRatio)
+    
+    def makeGray(self):
+        self.myCVimg=opncvAP.gray_scale(self.myCVimg)
+        self.redrawImg()
+    
 
+   
+        
 
 app = QApplication(sys.argv)
 #app.setStyle("Fusion")

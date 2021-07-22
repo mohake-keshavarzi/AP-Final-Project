@@ -1,8 +1,19 @@
 import numpy as np 
-
+from PyQt5 import QtGui
 import matplotlib.pyplot as plt
 import cv2
 
+def convert_cv_qt(cv_img):
+    """Convert from an opencv image to QPixmap"""
+    #https://gist.github.com/docPhil99/ca4da12c9d6f29b9cea137b617c7b8b1
+    #Thank you docPhil99
+    rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+    h, w, ch = rgb_image.shape
+    bytes_per_line = ch * w
+    convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+    #p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
+    p=convert_to_Qt_format
+    return QtGui.QPixmap.fromImage(p)
 
 def read_image(url):
     src=cv2.imread(url)
@@ -27,8 +38,12 @@ def filter(src,filter):
     return image
 
 def gray_scale(src):
-    image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
-    return image
+    try:
+        image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
+        return image
+    except:
+        print('Image is GrayScale itself')
+        return src
 
 def blur(src,k):
     image1= cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
