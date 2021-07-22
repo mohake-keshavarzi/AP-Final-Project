@@ -41,18 +41,31 @@ def resize(src,x,y):
 
 def show(image,name="image"):
     cv2.imshow(name,image)
-    pass
+    
+
+def save_im(url,image):
+    cv2.imwrite(url, image)
+
+def random_crop(src):
+    x=src.shape[0]
+    y=src.shape[1]
+    x1=np.random.randint(x)
+    x2=x1+np.random.randint(x-x1)
+    y1=np.random.randint(y)
+    y2=x1+np.random.randint(y-y1)
+    image=crop(src,x1,y1,x2,y2)
+    return image
 
 
 
 if __name__=="__main__":
-    src=read_image("im1.jpg")
-    image=resize(src,300,300)
-    imgra=gray_scale(image)
-    image1=rotate(image,360)
-    show(imgra,name="imagr")
-    show(image)
-    show(image1,name="image1")
+#     src=read_image("im1.jpg")
+#     image=resize(src,300,300)
+#     imgra=gray_scale(image)
+#     image1=rotate(image,360)
+#     show(imgra,name="imagr")
+#     show(image)
+#     show(image1,name="image1")
     cv2.waitKey()
     cv2.destroyAllWindows()
     pass
