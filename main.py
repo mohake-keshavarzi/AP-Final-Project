@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5 import uic,QtGui
-from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem
+from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene
 
 
 Form = uic.loadUiType(os.path.join(os.getcwd(),"mainForm.ui"))[0]
@@ -14,6 +14,9 @@ class mainWindow(QMainWindow, Form):
         self.delDir_pb.clicked.connect(self.delDir)
         self.outDir_le.setText(os.getcwd())
         self.outDir_pb.clicked.connect(self.outDir)
+        self.scene=QGraphicsScene()
+        #self.scene.addText("Hello")
+        self.graphView_gv.setScene(self.scene)
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
