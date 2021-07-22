@@ -1,7 +1,7 @@
 import sys
 import os
-from PyQt5 import uic,QtGui
-from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene
+from PyQt5 import uic,QtGui,QtCore
+from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene,QErrorMessage
 
 
 Form = uic.loadUiType(os.path.join(os.getcwd(),"mainForm.ui"))[0]
@@ -14,9 +14,11 @@ class mainWindow(QMainWindow, Form):
         self.delDir_pb.clicked.connect(self.delDir)
         self.outDir_le.setText(os.getcwd())
         self.outDir_pb.clicked.connect(self.outDir)
+        self.imgNames_tw.cellClicked.connect(self.showImg)
         self.scene=QGraphicsScene()
         #self.scene.addText("Hello")
         self.graphView_gv.setScene(self.scene)
+        self.myImg
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -69,6 +71,18 @@ class mainWindow(QMainWindow, Form):
                     
                     
                     i=i+1
+    
+    def showImg(self,row,col):
+        #self.scene.addText(f'{row},{col}')
+        pix=QtGui.QPixmap()
+        try:
+            pix.load(self.imgNames_tw.item(row,1).text())
+            self.scene.clear()
+            pixit=self.scene.addPixmap(pix)
+            self.graphView_gv.fitInView(pixit,QtCore.Qt.KeepAspectRatio)
+        except:
+            err=QErrorMessage(self)
+            err.showMessage("Something went wrong! Maybe the image is deleted or moved")
                     
 
 
