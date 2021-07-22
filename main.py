@@ -1,5 +1,6 @@
 import sys
 import os
+import opncvAP
 from PyQt5 import uic,QtGui,QtCore
 from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene,QErrorMessage
 
@@ -18,7 +19,7 @@ class mainWindow(QMainWindow, Form):
         self.scene=QGraphicsScene()
         #self.scene.addText("Hello")
         self.graphView_gv.setScene(self.scene)
-        self.myImg
+        #self.myImg
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
