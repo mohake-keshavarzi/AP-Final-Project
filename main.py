@@ -22,7 +22,9 @@ class mainWindow(QMainWindow, Form):
         self.graphView_gv.setScene(self.scene)
         #self.myImg
         self.myCVimg=None
+        self.myCVimg_backup=None
         self.grayScale_pb.clicked.connect(self.makeGray)
+        self.rotate_dial.valueChanged.connect(self.doRotate)
 
     def addNewDir(self):
         directory=str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -81,6 +83,7 @@ class mainWindow(QMainWindow, Form):
         pix=QtGui.QPixmap()
         try:
             self.myCVimg=opncvAP.read_image(self.imgNames_tw.item(row,1).text())
+            self.myCVimg_backup=self.myCVimg
             pix.load(self.imgNames_tw.item(row,1).text())
             self.scene.clear()
             pixit=self.scene.addPixmap(pix)
@@ -89,9 +92,9 @@ class mainWindow(QMainWindow, Form):
             err=QErrorMessage(self)
             err.showMessage("Something went wrong! Maybe the image is deleted or moved")
                     
-    def redrawImg(self):
+    def redrawImg(self,img):
         self.scene.clear()
-        pix=opncvAP.convert_cv_qt(self.myCVimg)
+        pix=opncvAP.convert_cv_qt(img)
         pixit=self.scene.addPixmap(pix)
         self.graphView_gv.fitInView(pixit,QtCore.Qt.KeepAspectRatio)
         # cvRGBImg = cv2.cvtColor(self.myCVimg, cv2.COLOR_BGR2RGBA)
@@ -105,8 +108,22 @@ class mainWindow(QMainWindow, Form):
         #self.graphView_gv.fitInView(pixit,QtCore.Qt.KeepAspectRatio)
     
     def makeGray(self):
-        self.myCVimg=opncvAP.gray_scale(self.myCVimg)
-        self.redrawImg()
+        newImg=opncvAP.gray_scale(self.myCVimg)
+        if newImg is None:
+            return
+        else:
+            self.myCVimg=newImg
+            self.redrawImg(self.myCVimg)
+            self.doneTasks_lw.addItem("GrayScale")
+
+    def doRotate(self):
+        #self.myCVimg
+        newImg=opncvAP.rotate(self.myCVimg, self.rotate_dial.value())
+        self.rotate_lb.text=f"{self.rotate_dial.value()} degree"
+        self.redrawImg(newImg)
+
+
+        
     
 
    

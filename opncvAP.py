@@ -26,8 +26,15 @@ def crop(src,x1,y1,x2,y2):
 
 def rotate(src,angle):
     h,w=src.shape[:2]
+    image_center=(w/2,h/2)
     r=cv2.getRotationMatrix2D((w/2,h/2), angle, 1.0)
-    image = cv2.warpAffine(src,r, (w, h))
+    abs_cos = abs(r[0,0]) 
+    abs_sin = abs(r[0,1])
+    bound_w = int(h * abs_sin + w * abs_cos)
+    bound_h = int(h * abs_cos + w * abs_sin)
+    r[0, 2] += bound_w/2 - image_center[0]
+    r[1, 2] += bound_h/2 - image_center[1]
+    image = cv2.warpAffine(src,r, (bound_w, bound_h))
 
     return image
 
@@ -43,7 +50,7 @@ def gray_scale(src):
         return image
     except:
         print('Image is GrayScale itself')
-        return src
+        return None
 
 def blur(src,k):
     image1= cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
