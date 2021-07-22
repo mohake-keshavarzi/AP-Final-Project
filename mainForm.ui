@@ -74,7 +74,7 @@
     <property name="geometry">
      <rect>
       <x>600</x>
-      <y>70</y>
+      <y>80</y>
       <width>131</width>
       <height>28</height>
      </rect>
@@ -87,7 +87,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>150</y>
+      <y>170</y>
       <width>481</width>
       <height>31</height>
      </rect>
@@ -100,14 +100,53 @@
     <property name="geometry">
      <rect>
       <x>600</x>
-      <y>150</y>
+      <y>170</y>
       <width>131</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string> Output Directory</string>
     </property>
+   </widget>
+   <widget class="QListWidget" name="imgNames_lw">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>270</y>
+      <width>211</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="imgNames_tw">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>260</y>
+      <width>341</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
+    <column>
+     <property name="text">
+      <string>File Name</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Path</string>
+     </property>
+    </column>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

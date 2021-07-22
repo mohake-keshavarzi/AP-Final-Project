@@ -1,7 +1,8 @@
 import sys
 import os
-from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog
+from PyQt5 import uic,QtGui
+from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem
+
 
 Form = uic.loadUiType(os.path.join(os.getcwd(),"mainForm.ui"))[0]
 
@@ -22,11 +23,27 @@ class mainWindow(QMainWindow, Form):
             if str(self.inDirs_lw.item(i).text())== directory:
                 return
                 #print("HERE")
-        self.inDirs_lw.addItem(directory)
+        if directory!='':
+            self.inDirs_lw.addItem(directory)
+            self.collectImgs(directory)
+
 
     def delDir(self):
         if(self.inDirs_lw.currentItem() != None):
+            dirtext=self.inDirs_lw.currentItem().text()
             self.inDirs_lw.takeItem(self.inDirs_lw.currentRow())
+            #print(self.imgNames_tw.rowCount())
+            i=0
+            for j in range(self.imgNames_tw.rowCount()):
+                if self.imgNames_tw.item(i,1)==None:
+                    break
+                #print(dirtext)
+                #print(self.imgNames_tw.item(i,1).text())
+                if self.imgNames_tw.item(i,1).text()== os.path.join(dirtext, (self.imgNames_tw.item(i,0).text())) :
+                    #print("deleted")
+                    self.imgNames_tw.removeRow(i)
+                    i=i-1
+                i=i+1
             #print(self.inDirs_lw.currentItem().text())
 
     def outDir(self):
@@ -34,6 +51,23 @@ class mainWindow(QMainWindow, Form):
         #self.outDir_le.setText("dddddddddddQQQQQQQ")
         if directory != "":
             self.outDir_le.setText(directory)
+
+    def collectImgs(self,folder):
+        with os.scandir(folder) as it:
+            i=self.imgNames_tw.rowCount()
+            for entry in it:
+                if (entry.name.endswith('.png') or entry.name.endswith('.PNG') or entry.name.endswith('.jpg') or entry.name.endswith('.JPG') or entry.name.endswith('.jpeg') or entry.name.endswith('.JPEG')) and entry.is_file():
+                    #print(entry.name)
+                    #self.imgNames_lw.addItem(entry.name)
+                    self.imgNames_tw.insertRow(i)
+                    tumb=QTableWidgetItem(QtGui.QIcon(entry.path),entry.name)
+                    self.imgNames_tw.setItem(i,0,tumb)
+                    self.imgNames_tw.setItem(i,1,QTableWidgetItem(entry.path))
+                    
+                    
+                    i=i+1
+                    
+
 
 app = QApplication(sys.argv)
 #app.setStyle("Fusion")
