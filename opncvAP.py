@@ -53,8 +53,8 @@ def gray_scale(src):
         return None
 
 def blur(src,k):
-    image1= cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
-    image = cv2.blur(image1,(k,k)) 
+    #image1= cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
+    image = cv2.blur(src,(k,k)) 
     return image
 
 def resize(src,x,y):
@@ -69,12 +69,12 @@ def save_im(url,image):
     cv2.imwrite(url, image)
 
 def random_crop(src):
-    x=src.shape[0]
-    y=src.shape[1]
+    x=src.shape[1]
+    y=src.shape[0]
     x1=np.random.randint(x)
     x2=x1+np.random.randint(x-x1)
     y1=np.random.randint(y)
-    y2=x1+np.random.randint(y-y1)
+    y2=y1+np.random.randint(y-y1)
     image=crop(src,x1,y1,x2,y2)
     return image
 
