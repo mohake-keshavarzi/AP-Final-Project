@@ -1,6 +1,7 @@
 import sys
 import os
 import opncvAP
+import temp
 import cv2
 from PyQt5 import uic,QtGui,QtCore
 from PyQt5.QtWidgets import QApplication , QMainWindow,QFileDialog , QTableWidgetItem,QGraphicsScene,QErrorMessage,QMessageBox
@@ -41,7 +42,14 @@ class mainWindow(QMainWindow, Form):
         self.showmeRndCrp_pb.clicked.connect(self.doRandomCrop)
         self.confRndCrp_pb.clicked.connect(self.confirmRandomCrop)
         self.tasksList=[]
-        
+        self.kval=0
+        self.x1val=0
+        self.x2val=0
+        self.y1val=0
+        self.y2val=0
+        self.doAll_pb.clicked.connect(self.doAlltasksForAll)
+        self.upload_pb.clicked.connect(lambda: temp.uploadAll())
+        # self.ch_pb.clicked.connect(lambda: print(self.tasksList))
         
 
     def addNewDir(self):
@@ -133,7 +141,8 @@ class mainWindow(QMainWindow, Form):
         else:
             self.myCVimg=newImg
             self.redrawImg(self.myCVimg)
-            #self.doneTasks_lw.addItem("GrayScale")
+            self.tasksList.append("GrayScale")
+            self.doneTasks_lw.addItem("GrayScale")
 
     def doRotate(self):
         
@@ -152,12 +161,15 @@ class mainWindow(QMainWindow, Form):
             return
         else:
             self.myCVimg=self.nextImg
-            #self.doneTasks_lw.addItem(f"Rotated to {self.rotatedImg[1]} degree")
+            self.doneTasks_lw.addItem(f"Rotated to {self.rotate_dial.value()} degree")
+            self.tasksList.append(("Rotate",self.rotate_dial.value() ))
+
             self.nextImg=None
             self.rotate_dial.setValue(0)
             self.rotate_lb.setText(f"{self.rotate_dial.value()} degree")
             self.redrawImg(self.myCVimg)
-
+            
+            
 
     def doBlur(self):
         
@@ -167,8 +179,10 @@ class mainWindow(QMainWindow, Form):
         else:
             k=self.blur_sb.value()
         newImg=opncvAP.blur(self.myCVimg, k)
+        self.kval=k
         self.redrawImg(newImg)
         self.nextImg=newImg
+        
 
     def confirmBlur(self):
 
@@ -176,11 +190,14 @@ class mainWindow(QMainWindow, Form):
             return
         else:
             self.myCVimg=self.nextImg
-            #self.doneTasks_lw.addItem(f"Rotated to {self.rotatedImg[1]} degree")
             self.nextImg=None
+            self.tasksList.append(("Blur",self.kval))
+            self.doneTasks_lw.addItem(f"Blur to {self.kval}")
             self.blur_sb.setValue(1)
             # self.rotate_lb.setText(f"{self.rotate_dial.value()} degree")
             self.redrawImg(self.myCVimg)
+            
+            
 
     def doResize(self):
 
@@ -193,13 +210,15 @@ class mainWindow(QMainWindow, Form):
             return
         else:
             self.myCVimg=self.nextImg
-            #self.doneTasks_lw.addItem(f"Rotated to {self.rotatedImg[1]} degree")
+            self.doneTasks_lw.addItem(f"Resized to X={self.x_sb.value()} , Y={self.y_sb.value()} ")
+            self.tasksList.append(("Resize",self.x_sb.value(),self.y_sb.value()))
             self.nextImg=None
             self.x_sb.setValue(1)
             self.y_sb.setValue(1)
             # self.rotate_lb.setText(f"{self.rotate_dial.value()} degree")
             self.redrawImg(self.myCVimg)
 
+            
 
     def doCrop(self):
         x1=self.cx_sb.value()
@@ -213,7 +232,10 @@ class mainWindow(QMainWindow, Form):
         
         if(y2>self.myCVimg.shape[0]):
             y2=self.myCVimg.shape[0]
-                    
+        self.x1val=x1
+        self.x2val=x2
+        self.y1val=y1
+        self.y2val=y2        
         newImg=opncvAP.crop(self.myCVimg, x1, y1, x2, y2)
         self.redrawImg(newImg)
         self.nextImg=newImg
@@ -223,7 +245,8 @@ class mainWindow(QMainWindow, Form):
             return
         else:
             self.myCVimg=self.nextImg
-            #self.doneTasks_lw.addItem(f"Rotated to {self.rotatedImg[1]} degree")
+            self.doneTasks_lw.addItem(f"Crop to x1={self.x1val} y1={self.y1val} x2={self.y2val} y2={self.y2val}")
+            self.tasksList.append(("Crop",self.x1val,self.y1val,self.x2val,self.y2val))
             self.nextImg=None
             self.cx_sb.setValue(0)
             self.cy_sb.setValue(0)
@@ -243,11 +266,55 @@ class mainWindow(QMainWindow, Form):
             return
         else:
             self.myCVimg=self.nextImg
-            #self.doneTasks_lw.addItem(f"Rotated to {self.rotatedImg[1]} degree")
+            self.doneTasks_lw.addItem("RandomCrop")
+            self.tasksList.append(("RandomCrop",0))
             self.nextImg=None
             
             self.redrawImg(self.myCVimg)
 
+    def doAlltasksForAll(self):
+        cv2img=None
+        for i in range(self.imgNames_tw.rowCount()):
+            cv2img=opncvAP.read_image(self.imgNames_tw.item(i,1).text())
+            for tsk in self.tasksList:
+                if tsk[0]=="GrayScale":
+                    try:
+                        cv2img=opncvAP.gray_scale(cv2img)
+                        print(f"{self.imgNames_tw.item(i,1).text()} GrayScale Passed!")
+                    except:
+                        print(f"{self.imgNames_tw.item(i,1).text()} GrayScale Failed")
+                if tsk[0]=="Rotate":
+                    try:
+                        cv2img=opncvAP.rotate(cv2img, tsk[1])
+                        print(f"{self.imgNames_tw.item(i,1).text()} Rotate Passed!")
+                    except:
+                        print(f"{self.imgNames_tw.item(i,1).text()} Rotate Failed")
+                if tsk[0]=="Blur":
+                    try:
+                        cv2img=opncvAP.blur(cv2img, tsk[1])
+                        print(f"{self.imgNames_tw.item(i,1).text()} Blur Passed!")
+                    except:
+                        print(f"{self.imgNames_tw.item(i,1).text()} Blur Failed")
+                if tsk[0]=="Resize":
+                    try:
+                        cv2img=opncvAP.resize(cv2img, tsk[1], tsk[2])
+                        print(f"{self.imgNames_tw.item(i,1).text()} Resize Passed!")
+                    except:
+                        print(f"{self.imgNames_tw.item(i,1).text()} Resize Failed")
+                if tsk[0]=="Crop":
+                    try:
+                        cv2img=opncvAP.crop(cv2img, tsk[1], tsk[2], tsk[3], tsk[4])
+                        print(f"{self.imgNames_tw.item(i,1).text()} Crop Passed!")
+                    except:
+                        print(f"{self.imgNames_tw.item(i,1).text()} Crop Failed")
+                if tsk[0]=="RandomCrop":
+                    try:
+                        cv2img=opncvAP.random_crop(cv2img)
+                        print(f"{self.imgNames_tw.item(i,1).text()} RandomCrop Passed!")
+                    except:
+                        print(f"{self.imgNames_tw.item(i,1).text()} RandomCrop Failed")
+            
+            opncvAP.save_im(f"{self.outDir_le.text()}\{self.imgNames_tw.item(i,0).text()}" , cv2img)
         
 
 

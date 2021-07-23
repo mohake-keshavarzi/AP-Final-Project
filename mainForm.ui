@@ -19,6 +19,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_9">
       <item>
        <widget class="QPushButton" name="grayScale_pb">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Gray Scale</string>
         </property>
@@ -284,7 +287,21 @@
        </layout>
       </item>
       <item>
-       <widget class="QTableWidget" name="tableWidget"/>
+       <widget class="QListWidget" name="doneTasks_lw"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="doAll_pb">
+        <property name="text">
+         <string>Do All Tasks for All Images</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="upload_pb">
+        <property name="text">
+         <string>VIP : Upload to Server</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
