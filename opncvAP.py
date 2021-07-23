@@ -40,7 +40,7 @@ def rotate(src,angle):
 
 def filter(src,filter):
     image1= cv2.cvtColor(src, cv2.COLOR_BGR2GRAY )
-    image=cv2.filter2D(src=image1, kernel=sharpenKernel, ddepth=-1)
+    image=cv2.filter2D(src=image1, kernel=filter, ddepth=-1)
 
     return image
 
